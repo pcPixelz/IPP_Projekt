@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore"; // import Firestore
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCHV4uavwMINYlxa2TxF9yXOeINyz71SPw",
+  apiKey: "APIKEY",
   authDomain: "bokningssystem-779e1.firebaseapp.com",
   projectId: "bokningssystem-779e1",
   storageBucket: "bokningssystem-779e1.firebasestorage.app",
