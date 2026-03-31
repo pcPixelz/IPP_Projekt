@@ -9,13 +9,10 @@ import ProfileScreen from "./screens/ProfileScreen";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Test text</Text>
-      <StatusBar style="auto" />
       <NavigationContainer>
       <MyStack />
+      <StatusBar style="auto" />
     </NavigationContainer>
-    </View>
     
   );
 }
