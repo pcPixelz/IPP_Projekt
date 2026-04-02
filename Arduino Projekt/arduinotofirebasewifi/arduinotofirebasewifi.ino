@@ -1,34 +1,51 @@
 #include <WiFiS3.h>
+#include <Firebase.h>
 
-#define Wifi_SSID "Antons iPhone"
-#define Wifi_Password "12345678"
+#define WIfI_SSID "Antons iPhone"
+#define WIfI_PASSWORD "12345678"
 
-#define server "bokningssystem-779e1-default-rtdb.europe-west1.firebasedatabase.app"
+#define REFERENCE_URL "bokningssystem-779e1-default-rtdb.europe-west1.firebasedatabase.app"
 
 WiFiClient client;
+
+Firebase fb(REFERENCE_URL);
 
 void setup() {
   // put your setup code here, to run once:
 
   Serial.begin(9600);
 
+  WiFi.disconnect();
+  Serial.println("Disconnecting from previous Wifi");
+  delay(1000);
+
   Serial.println("Initializing!");
 
-  while (WiFi.begin(Wifi_SSID, Wifi_Password) != WL_CONNECTED) {
-    Serial.println(String("Connecting to wifi ") + Wifi_SSID);
+  while (WiFi.begin(WIfI_SSID, WIfI_PASSWORD) != WL_CONNECTED) {
+    Serial.println(String("Connecting to wifi ") + WIfI_SSID);
     delay(3000);
   }
 
-  Serial.println(String("Connected to ") + Wifi_SSID);
+  Serial.println(String("Connected to ") + WIfI_SSID);
 }
 
+
+//https://github.com/Rupakpoddar/FirebaseArduino/blob/main/examples/Basic/Basic.ino
 void loop() {
   // put your main code here, to run repeatedly:
-/*
-  if (client.connect(server, 443)) {
+   int responseCode;
 
-    Serial.println("Connected to Firebase");
-  }
-  */
+    // Example integer to send
+    int myValue = 3;  // replace this with your variable or sensor reading
+
+    // Push the integer to the "test" collection
+    responseCode = fb.pushInt("test", myValue);
+
+    Serial.print("Pushed integer: ");
+    Serial.print(myValue);
+    Serial.print(" - Response Code: ");
+    Serial.println(responseCode);
+
+    delay(2000); // Wait 2 seconds before sending the next value
 
 }
