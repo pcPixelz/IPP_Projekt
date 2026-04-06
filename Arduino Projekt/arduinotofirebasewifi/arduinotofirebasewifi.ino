@@ -45,6 +45,28 @@ byte frameStandard[8][12] = {
   { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 }
 };
 
+byte frameWifiConnecting[8][12] = {
+  { 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0 },
+  { 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0 },
+  { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 }
+};
+
+byte frameWifiConnected[8][12] = {
+  { 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1 },
+  { 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1 },
+  { 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1 }
+};
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -55,17 +77,20 @@ void setup() {
   Serial.println("Disconnecting from previous Wifi");
   delay(1000);
 
+  matrix.begin();
+
   Serial.println("Initializing!");
 
 //Medan arduino håller på att ansluta till wifi, skriv ut meddelanden i serial.
   while (WiFi.begin(WIfI_SSID, WIfI_PASSWORD) != WL_CONNECTED) {
     Serial.println(String("Connecting to wifi ") + WIfI_SSID);
+    matrix.renderBitmap(frameWifiConnecting, 8, 12);
     delay(3000);
   }
 
   Serial.println(String("Connected to ") + WIfI_SSID);
+  matrix.renderBitmap(frameWifiConnected, 8, 12);
 
-  matrix.begin();
 }
 
 void loop() {
