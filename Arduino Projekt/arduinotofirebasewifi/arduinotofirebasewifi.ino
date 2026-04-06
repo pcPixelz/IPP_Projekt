@@ -1,13 +1,49 @@
 #include <WiFiS3.h>
 #include <HttpClient.h>
+#include "Arduino_LED_Matrix.h"
+//https://arduinojson.org/
+#include <ArduinoJson.h>
 
-#define WIfI_SSID "Antons iPhone"
-#define WIfI_PASSWORD "12345678"
 #include "projectsecrets.h"
 
 WiFiSSLClient wificlient;
 //http://github.com/amcewen/HttpClient
 HttpClient client = HttpClient(wificlient, serverAddress, port);
+
+ArduinoLEDMatrix matrix;
+
+byte frameOpen[8][12] = {
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+  { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+  { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+  { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
+};
+
+byte frameClose[8][12] = {
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+  { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+  { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+  { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+};
+
+byte frameStandard[8][12] = {
+  { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+  { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+  { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+  { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+  { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+  { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
+  { 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 },
+  { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 }
+};
 
 void setup() {
   // put your setup code here, to run once:
@@ -29,14 +65,26 @@ void setup() {
 
   Serial.println(String("Connected to ") + WIfI_SSID);
 
+  matrix.begin();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   //sendToFirestore();
-
-  readFromFirestore("test", "demo1"); //i firebase, (collection, document)
-  delay(10000); // skicka var 10 sek
+  int value = readIntFromFirestore("led", "test", "demo1"); //i firebase, (field, collection, document)
+  if(value == 1)
+  {
+      matrix.renderBitmap(frameOpen, 8, 12);
+  }
+  else if (value == 0)
+  {
+      matrix.renderBitmap(frameClose, 8, 12);
+  }
+  else
+  {
+    matrix.renderBitmap(frameStandard, 8, 12);
+  }
+  delay(3000); // vänta x/1000 sek mellan skicka/läsa
 
 }
 
@@ -69,7 +117,7 @@ void sendToFirestore() {
   Serial.println(response);
 }
 
-void readFromFirestore(String firebase_collection, String firebase_document) {
+int readIntFromFirestore(String field, String firebase_collection, String firebase_document) {
   String url = "/v1/projects/" + projectId + "/databases/(default)/documents/" + firebase_collection + "/" + firebase_document + "?key=" + apiKey;
 
 //https://github.com/arduino-libraries/ArduinoHttpClient/blob/master/examples/SimpleGet/SimpleGet.ino
@@ -80,10 +128,25 @@ void readFromFirestore(String firebase_collection, String firebase_document) {
   int statusCode = client.responseStatusCode();
   String response = client.responseBody();
 
+//https://arduinojson.org/v7/example/parser/ json dserialization
+  JsonDocument doc;
+
+  DeserializationError error = deserializeJson(doc, response);
+
+    if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return -1;
+  }
+
+  int field_value = doc["fields"][field]["integerValue"];
+
+  Serial.println("field_value:" + String(field_value));
+
   Serial.print("Status code: ");
   Serial.println(statusCode);
   Serial.print("Response: ");
   Serial.println(response);
-  Serial.println("Wait five seconds");
-  delay(5000);
+
+  return field_value;
 }
