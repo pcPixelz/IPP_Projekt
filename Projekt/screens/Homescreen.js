@@ -9,9 +9,11 @@ import CustomLogin from '../components/customlogin';
 export default function Homescreen({navigation}) {
 
   const [text, setText] = useState('');
+  const [usertext, setUserText] = useState('Logga in för att gå vidare');
 
   return(
         <View style={styles.container}>
+              <Text>{usertext}</Text>
               <Text>Du är på "Homescreen"</Text>
               <CustomLogin/>
               <Button
