@@ -1,13 +1,19 @@
-import * as React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 
+import CustomLogin from '../components/customlogin';
+
 export default function Homescreen({navigation}) {
-    return(
+
+  const [text, setText] = useState('');
+
+  return(
         <View style={styles.container}>
               <Text>Du är på "Homescreen"</Text>
+              <CustomLogin/>
               <Button
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
