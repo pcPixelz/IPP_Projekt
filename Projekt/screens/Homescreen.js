@@ -8,14 +8,15 @@ import CustomLogin from '../components/customlogin';
 
 export default function Homescreen({navigation}) {
 
-  const [text, setText] = useState('');
-  const [usertext, setUserText] = useState('Logga in för att gå vidare');
+  const [currentuser, setCurrentUser] = useState('EJ INLOGGAD');
 
   return(
         <View style={styles.container}>
-              <Text>{usertext}</Text>
+              <Text>Du är inloggad som {currentuser}</Text>
               <Text>Du är på "Homescreen"</Text>
-              <CustomLogin/>
+              <CustomLogin
+              CurrentUser = {setCurrentUser}
+              />
               <Button
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
