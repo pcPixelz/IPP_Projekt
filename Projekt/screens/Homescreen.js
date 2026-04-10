@@ -21,6 +21,10 @@ export default function Homescreen({navigation}) {
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
               />
+              <Button
+              title="Bokning"
+              onPress={() => navigation.navigate("Bokning")}
+              />
               <StatusBar style="auto" />
             </View>
     );

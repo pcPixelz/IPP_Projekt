@@ -7,6 +7,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import HomeScreen from "./screens/HomeScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import ReservationScreen from "./screens/ReservationScreen";
 
 //för att köra allt i terminalen npx expo start --web
 
@@ -27,6 +28,7 @@ function MyStack() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name='Bokning' component={ReservationScreen} />
     </Stack.Navigator>
   );
 }
