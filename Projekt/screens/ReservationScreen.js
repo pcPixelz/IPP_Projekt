@@ -3,7 +3,8 @@ import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore";
+
 
 //DateTimePicker
 //https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0?utm_source=chatgpt.com
@@ -13,6 +14,8 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 export default function ReservationScreen({navigation, route}) {
 
     const {current_user} = route.params;
+
+    const [selected_locker, setLocker] = useState(0);
     
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
@@ -33,9 +36,11 @@ export default function ReservationScreen({navigation, route}) {
   const userCollection = collection(db, 'Reservations');
 
   const sendReservation = async () => {
-    try {
+    if (await isAvailable(selected_locker)) {
+        try {
         await addDoc(userCollection, {
             user: current_user,
+            locker: selected_locker,
             startdate: Timestamp.fromDate(new Date()),
             enddate: Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes())),
         });
@@ -44,14 +49,28 @@ export default function ReservationScreen({navigation, route}) {
       console.log(err);
       alert("Error sending reservation data");
     }
+    }
+    else
+    {
+        alert("Skåp uptaget");
+    }
   }
+
+  const isAvailable = async (locker) => {
+
+    const q = query(userCollection, where('locker', '==', locker));
+
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.empty;
+}
 
     return(
         <View>
         <Text style={styles.text}>Välj ett skåp att reservera</Text>
         <TouchableOpacity
             style={styles.button}
-            onPress={() => alert("skåp 1 knapp")}
+            onPress={() => alert(setLocker(3))}
             
         >
             <Text style={styles.buttontext}>Skåp 1</Text>
