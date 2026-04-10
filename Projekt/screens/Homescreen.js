@@ -13,7 +13,6 @@ export default function Homescreen({navigation}) {
   return(
         <View style={styles.container}>
               <Text>Du är inloggad som {currentuser}</Text>
-              <Text>Du är på "Homescreen"</Text>
               <CustomLogin
               CurrentUser = {setCurrentUser}
               />

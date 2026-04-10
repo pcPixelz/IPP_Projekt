@@ -11,8 +11,8 @@ const CustomLogin = ( {CurrentUser} ) => {
     const [user_password, setPassword] = useState('');
 
     return(
-        <View>
-            <Text>Logga in ANGE INTE ETT RIKTIGT LÖSENORD</Text>
+        <View style={styles.view}>
+            <Text>Logga in</Text>
             <LoginTextInput
             placeholder="Mail"
             value={user_email}
@@ -74,12 +74,20 @@ const LoginTextInput = ({placeholder, value, onChangeText}) => {
 }
 
 const styles = StyleSheet.create({
+    view: {
+        backgroundColor: 'rgb(239, 239, 239)',
+        padding: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderRadius: 10,
+    },
   logintextinput: {
     height: 60,
     width: 300,
     padding: 10,
     marginVertical: 8,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    backgroundColor: '#FFFFFF',
   },
 });
 
