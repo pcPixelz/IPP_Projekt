@@ -2,26 +2,50 @@ import React, {useState} from 'react';
 import { View, Text, Platform, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
+//Firestore
+//Firebase
+import { db } from "../firebaseConfig";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+
 //DateTimePicker
 //https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0?utm_source=chatgpt.com
 //https://docs.expo.dev/versions/latest/sdk/date-time-picker/
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-export default function ReservationScreen({navigation}) {
+export default function ReservationScreen({navigation, route}) {
 
+    const {current_user} = route.params;
     //https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0?utm_source=chatgpt.com#getting-started
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
 
-  const onChange = (event, selectedDate) => {
+  const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
     setDate(currentDate);
+  };
+
+  const onChangeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setTime(currentTime);
   };
 
   const today_date = new Date();
   const tomorrow_date = new Date(new Date().setDate(new Date().getDate() + 1));
+
+  const userCollection = collection(db, 'Reservations');
+
+  const sendReservation = async () => {
+    try {
+        await addDoc(userCollection, {
+            user: current_user,
+            startdate: Timestamp.fromDate(new Date()),
+            enddate: Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes())),
+        });
+    } catch (err) {
+      console.log(err);
+      alert("Error sending reservation data");
+    }
+  }
 
     return(
         <View>
@@ -38,23 +62,29 @@ export default function ReservationScreen({navigation}) {
 
         <DateTimePicker
         style={styles.datetime}
-        testID="dateTimePicker"
+        testID="datePicker"
           value={date}
           mode={'date'}
           is24Hour={true}
           display="default"
-          onChange={onChange}
+          onChange={onChangeDate}
           minimumDate={today_date}
           maximumDate={tomorrow_date}
         />
         <DateTimePicker
         style={styles.datetime}
-        testID="dateTimePicker"
-          value={date}
+        testID="TimePicker"
+          value={time}
           mode={'time'}
           is24Hour={true}
           display="default"
-          onChange={onChange}
+          onChange={onChangeTime}
+        />
+        <Text>{new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes()).toString()}</Text>
+
+        <Button
+        title='Bekräfta bokning'
+        onPress={() => sendReservation()}
         />
     </View>
     );

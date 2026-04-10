@@ -23,7 +23,7 @@ export default function Homescreen({navigation}) {
               />
               <Button
               title="Bokning"
-              onPress={() => navigation.navigate("Bokning")}
+              onPress={() => navigation.navigate("Bokning", {current_user: currentuser})}
               />
               <StatusBar style="auto" />
             </View>
