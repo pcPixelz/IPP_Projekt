@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, TextInput, Text, StyleSheet, Button } from 'react-native';
+import { View, TextInput, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 // Firebase
 import { db } from '../firebaseConfig';
@@ -12,7 +12,7 @@ const CustomLogin = ( {CurrentUser, UserSelected} ) => {
 
     return(
         <View style={styles.view}>
-            <Text>Logga in</Text>
+            <Text style={styles.text}>Logga in</Text>
             <LoginTextInput
             placeholder="Mail"
             value={user_email}
@@ -23,10 +23,14 @@ const CustomLogin = ( {CurrentUser, UserSelected} ) => {
             value={user_password}
             onChangeText={setPassword}
             />
-            <Button
-            title="Logga In"
+
+            <TouchableOpacity
+            style={styles.btnloggain}
             onPress={() => FirestoreLogin(user_email, user_password, CurrentUser, UserSelected)}
-            />
+            >   
+
+            <Text style={styles.btnloggaintext}>Logga in</Text>
+            </TouchableOpacity>
         </View>
 
     );
@@ -76,7 +80,7 @@ const LoginTextInput = ({placeholder, value, onChangeText}) => {
 
 const styles = StyleSheet.create({
     view: {
-        backgroundColor: 'rgb(239, 239, 239)',
+        backgroundColor: 'rgb(156, 194, 218)',
         padding: 10,
         paddingLeft: 20,
         paddingRight: 20,
@@ -87,8 +91,22 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 10,
     marginVertical: 8,
-    borderWidth: 1.5,
     backgroundColor: '#FFFFFF',
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  btnloggain: {
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignSelf: 'flex-end',
+    height: 40,
+    width: 120,
+  },
+  btnloggaintext: {
+    alignSelf: 'center',
+    fontSize: 24,
   },
 });
 

@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
-import { View, Text, Platform, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
-//Firestore
-//Firebase
+//Firebase, firestore
 import { db } from "../firebaseConfig";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
@@ -15,19 +13,19 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 export default function ReservationScreen({navigation, route}) {
 
     const {current_user} = route.params;
-    //https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0?utm_source=chatgpt.com#getting-started
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
+    
+    const [date, setDate] = useState(new Date());
+    const [time, setTime] = useState(new Date());
 
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-  };
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+    };
 
-  const onChangeTime = (event, selectedTime) => {
-    const currentTime = selectedTime || time;
-    setTime(currentTime);
-  };
+    const onChangeTime = (event, selectedTime) => {
+        const currentTime = selectedTime || time;
+        setTime(currentTime);
+    };
 
   const today_date = new Date();
   const tomorrow_date = new Date(new Date().setDate(new Date().getDate() + 1));
@@ -41,6 +39,7 @@ export default function ReservationScreen({navigation, route}) {
             startdate: Timestamp.fromDate(new Date()),
             enddate: Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes())),
         });
+        alert("Boknings bekräftad");
     } catch (err) {
       console.log(err);
       alert("Error sending reservation data");
@@ -49,7 +48,7 @@ export default function ReservationScreen({navigation, route}) {
 
     return(
         <View>
-        <Text>Välj ett skåp att reservera</Text>
+        <Text style={styles.text}>Välj ett skåp att reservera</Text>
         <TouchableOpacity
             style={styles.button}
             onPress={() => alert("skåp 1 knapp")}
@@ -80,12 +79,13 @@ export default function ReservationScreen({navigation, route}) {
           display="default"
           onChange={onChangeTime}
         />
-        <Text>{new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes()).toString()}</Text>
+        <Text style={styles.text}>{new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes()).toString()}</Text>
 
-        <Button
-        title='Bekräfta bokning'
-        onPress={() => sendReservation()}
-        />
+        <TouchableOpacity style={styles.btnconfirm}
+        
+        onPress={() => sendReservation()}>
+            <Text style={styles.text}>Bekräfta bokning</Text>
+        </TouchableOpacity>
     </View>
     );
 }
@@ -97,19 +97,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  text: {
+    alignSelf: 'center',
+    fontSize: 32,
+    margin: 20,
+  },
   //https://stackoverflow.com/questions/44798426/how-to-change-background-color-of-react-native-button
   button: {
-    backgroundColor: '#7e9fd6',
+    backgroundColor: 'rgb(156, 194, 218)',
     height: 150,
     width: 150,
     alignSelf: 'center',
     justifyContent: 'center',
+    borderWidth: 5,
   },
   buttontext: {
     textAlign: 'center',
     fontSize: 32,
-    color: '#FFFFFF',
     fontWeight: 'bold',
+  },
+  btnconfirm: {
+    backgroundColor: '#a0a0a0',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 80,
+    width: 300,
   },
   datetime: {
     marginTop: 20,

@@ -1,19 +1,17 @@
 import React, {useState} from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import CustomLogin from '../components/customlogin';
 
 export default function Homescreen({navigation}) {
 
-  const [currentuser, setCurrentUser] = useState('EJ INLOGGAD');
+  const [currentuser, setCurrentUser] = useState('(ej inloggad)');
   const [user_selected, setUserSelected] = useState(false);
 
   return(
         <View style={styles.container}>
-              <Text>Du är inloggad som {currentuser}</Text>
+              <Text style={styles.headertext}>Du är inloggad som {currentuser}</Text>
               <CustomLogin
               CurrentUser = {setCurrentUser}
               UserSelected = {setUserSelected}
@@ -37,8 +35,12 @@ export default function Homescreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headertext: {
+    fontSize: 24,
+    marginBottom: 50,
+  }
 });
