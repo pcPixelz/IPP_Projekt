@@ -9,19 +9,23 @@ import CustomLogin from '../components/customlogin';
 export default function Homescreen({navigation}) {
 
   const [currentuser, setCurrentUser] = useState('EJ INLOGGAD');
+  const [user_selected, setUserSelected] = useState(false);
 
   return(
         <View style={styles.container}>
               <Text>Du är inloggad som {currentuser}</Text>
               <CustomLogin
               CurrentUser = {setCurrentUser}
+              UserSelected = {setUserSelected}
               />
               <Button
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
+              disabled={true}
               />
               <Button
               title="Bokning"
+              disabled={!user_selected}
               onPress={() => navigation.navigate("Bokning", {current_user: currentuser})}
               />
               <StatusBar style="auto" />

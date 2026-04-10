@@ -5,7 +5,7 @@ import { View, TextInput, Text, StyleSheet, Button } from 'react-native';
 import { db } from '../firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
-const CustomLogin = ( {CurrentUser} ) => {
+const CustomLogin = ( {CurrentUser, UserSelected} ) => {
 
     const [user_email, setEmail] = useState('');
     const [user_password, setPassword] = useState('');
@@ -25,7 +25,7 @@ const CustomLogin = ( {CurrentUser} ) => {
             />
             <Button
             title="Logga In"
-            onPress={() => FirestoreLogin(user_email, user_password, CurrentUser)}
+            onPress={() => FirestoreLogin(user_email, user_password, CurrentUser, UserSelected)}
             />
         </View>
 
@@ -33,7 +33,7 @@ const CustomLogin = ( {CurrentUser} ) => {
 }
 
 //https://rnfirebase.io/firestore/usage
-const FirestoreLogin = async (user_email, user_password, CurrentUser) => {
+const FirestoreLogin = async (user_email, user_password, CurrentUser, UserSelected) => {
 
     const userCollection = collection(db, 'Users');
     const q = query(userCollection, where('email', '==', user_email));
@@ -50,6 +50,7 @@ const FirestoreLogin = async (user_email, user_password, CurrentUser) => {
         else
         {
             CurrentUser(user_email);
+            UserSelected(true);
         }
     }
     else
