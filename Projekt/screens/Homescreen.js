@@ -19,7 +19,7 @@ export default function Homescreen({navigation}) {
               <Button
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
-              disabled={true}
+              disabled={false}
               />
               <Button
               title="Bokning"

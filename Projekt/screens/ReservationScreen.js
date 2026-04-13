@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from "firebase/firestore";
 
 
 //DateTimePicker
@@ -17,17 +17,30 @@ export default function ReservationScreen({navigation, route}) {
 
     const [selected_locker, setLocker] = useState(0);
     
-    const [date, setDate] = useState(new Date());
-    const [time, setTime] = useState(new Date());
+    const [start_date, setStartDate] = useState(new Date());
+    const [start_time, setStartTime] = useState(new Date());
 
-    const onChangeDate = (event, selectedDate) => {
+    const [end_date, setEndDate] = useState(new Date());
+    const [end_time, setEndTime] = useState(new Date());
+
+    const onChangeStartDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        setDate(currentDate);
+        setStartDate(currentDate);
     };
 
-    const onChangeTime = (event, selectedTime) => {
+    const onChangeStartTime = (event, selectedTime) => {
         const currentTime = selectedTime || time;
-        setTime(currentTime);
+        setStartTime(currentTime);
+    };
+
+        const onChangeEndDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setEndDate(currentDate);
+    };
+
+    const onChangeEndTime = (event, selectedTime) => {
+        const currentTime = selectedTime || time;
+        setEndTime(currentTime);
     };
 
   const today_date = new Date();
@@ -41,10 +54,10 @@ export default function ReservationScreen({navigation, route}) {
         await addDoc(userCollection, {
             user: current_user,
             locker: selected_locker,
-            startdate: Timestamp.fromDate(new Date()),
-            enddate: Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes())),
+            startdate: Timestamp.fromDate(new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes())),
+            enddate: Timestamp.fromDate(new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes())),
         });
-        alert("Boknings bekräftad");
+        alert("Bokning bekräftad");
     } catch (err) {
       console.log(err);
       alert("Error sending reservation data");
@@ -58,11 +71,28 @@ export default function ReservationScreen({navigation, route}) {
 
   const isAvailable = async (locker) => {
 
+    let available = true;
+
     const q = query(userCollection, where('locker', '==', locker));
 
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.empty;
+    if (!querySnapshot.empty)
+    {
+        //https://firebase.google.com/docs/reference/node/firebase.firestore.Timestamp#seconds
+        querySnapshot.docs.forEach(document => {
+            const existing_start_date = document.data().startdate.toDate();
+            const existing_end_date = document.data().enddate.toDate();
+            const new_start_date = new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes());
+            const new_end_date = new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes());
+            if ((new_start_date > existing_start_date && new_end_date < existing_end_date) || (new_start_date < existing_start_date && new_end_date > existing_start_date) || (new_start_date < existing_end_date && new_end_date > existing_end_date))
+            {
+                available = false;
+            }
+        });
+    }
+
+    return available;
 }
 
     return(
@@ -70,7 +100,7 @@ export default function ReservationScreen({navigation, route}) {
         <Text style={styles.text}>Välj ett skåp att reservera</Text>
         <TouchableOpacity
             style={styles.button}
-            onPress={() => alert(setLocker(3))}
+            onPress={() => setLocker(0)}
             
         >
             <Text style={styles.buttontext}>Skåp 1</Text>
@@ -80,25 +110,48 @@ export default function ReservationScreen({navigation, route}) {
 
         <DateTimePicker
         style={styles.datetime}
-        testID="datePicker"
-          value={date}
+        testID="StartDatePicker"
+          value={start_date}
           mode={'date'}
           is24Hour={true}
           display="default"
-          onChange={onChangeDate}
+          onChange={onChangeStartDate}
           minimumDate={today_date}
           maximumDate={tomorrow_date}
         />
         <DateTimePicker
         style={styles.datetime}
-        testID="TimePicker"
-          value={time}
+        testID="StartTimePicker"
+          value={start_time}
           mode={'time'}
           is24Hour={true}
           display="default"
-          onChange={onChangeTime}
+          onChange={onChangeStartTime}
         />
-        <Text style={styles.text}>{new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes()).toString()}</Text>
+
+        <DateTimePicker
+        style={styles.datetime}
+        testID="EndDatePicker"
+          value={end_date}
+          mode={'date'}
+          is24Hour={true}
+          display="default"
+          onChange={onChangeEndDate}
+          minimumDate={today_date}
+          maximumDate={tomorrow_date}
+        />
+        <DateTimePicker
+        style={styles.datetime}
+        testID="EndTimePicker"
+          value={end_time}
+          mode={'time'}
+          is24Hour={true}
+          display="default"
+          onChange={onChangeEndTime}
+        />
+        <Text style={styles.text}>{new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes()).toString()}</Text>
+
+        <Text style={styles.text}>{new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes()).toString()}</Text>
 
         <TouchableOpacity style={styles.btnconfirm}
         
