@@ -11,6 +11,7 @@ import HomeScreen from "./screens/HomeScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import ReservationScreen from "./screens/ReservationScreen";
 import ReservationOvScreen from "./screens/ReservationOvScreen";
+import LockerScreen from "./screens/LockerScreen";
 
 //för att köra allt i terminalen npx expo start --web
 
@@ -35,6 +36,7 @@ function MyStack() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name='Bokning' component={ReservationScreen}/>
       <Stack.Screen name='Bokningsöversikt' component={ReservationOvScreen} />
+      <Stack.Screen name='Aktiv Bokning' component={LockerScreen} />
     </Stack.Navigator>
   );
 }

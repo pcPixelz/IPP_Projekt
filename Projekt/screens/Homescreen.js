@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import CustomLogin from '../components/customlogin';
@@ -12,6 +12,7 @@ export default function Homescreen({navigation}) {
 
   return(
         <View style={styles.container}>
+          <Image style={styles.image} source={require('../images/logo.png')}/>
               <Text style={styles.headertext}>Du är inloggad som {currentUser}</Text>
               <CustomLogin
               />
@@ -35,6 +36,16 @@ export default function Homescreen({navigation}) {
                 !isUserSelected && styles.btnstyledisabled
               ]}
               disabled={!isUserSelected}
+              onPress={() => navigation.navigate("Aktiv Bokning")}
+              >
+                <Text style={styles.text}>Aktiv bokning</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+              style={[styles.btnstyle,
+                !isUserSelected && styles.btnstyledisabled
+              ]}
+              disabled={!isUserSelected}
               onPress={() => navigation.navigate("Bokningsöversikt")}
               >
                 <Text style={styles.text}>Bokningsöversikt</Text>
@@ -51,6 +62,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  image: {
+    resizeMode: 'contain',
+    width: 300,
+    height: 300,
+    marginTop: -150,
   },
   headertext: {
     fontSize: 24,

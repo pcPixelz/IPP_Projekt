@@ -57,6 +57,7 @@ export default function ReservationScreen({navigation}) {
             locker: selectedLocker,
             startdate: Timestamp.fromDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes())),
             enddate: Timestamp.fromDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes())),
+            islocked: true,
         });
         alert("Bokningen för skåp " + selectedLocker + " är bekräftad.");
     } catch (err) {
