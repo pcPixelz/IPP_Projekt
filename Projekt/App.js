@@ -33,7 +33,7 @@ function MyStack() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name='Bokning' component={ReservationScreen} />
+      <Stack.Screen name='Bokning' component={ReservationScreen}/>
       <Stack.Screen name='Bokningsöversikt' component={ReservationOvScreen} />
     </Stack.Navigator>
   );

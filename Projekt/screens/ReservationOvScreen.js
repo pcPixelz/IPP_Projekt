@@ -1,9 +1,9 @@
-import React, {useContext, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, FlatList } from 'react-native';
+import {useContext, useState, useEffect} from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs} from "firebase/firestore";
 
 import { UserContext } from "../context/UserContext";
 

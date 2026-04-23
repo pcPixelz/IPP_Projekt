@@ -1,9 +1,9 @@
-import React, {useContext, useState} from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import {useContext, useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, where, getDocs} from "firebase/firestore";
 
 import { UserContext } from "../context/UserContext";
 
@@ -14,6 +14,19 @@ import { UserContext } from "../context/UserContext";
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function ReservationScreen({navigation}) {
+
+  useEffect(() => {
+    SetupFunction();
+  }, []);
+
+  const SetupFunction = () => {
+    const now = new Date();
+    setStartDate(now);
+    setStartTime(now);
+
+    setEndDate(now);
+    setEndTime(now);
+  }
 
   const {currentUser} = useContext(UserContext);
 
@@ -26,7 +39,7 @@ export default function ReservationScreen({navigation}) {
     const [endTime, setEndTime] = useState(new Date());
 
     const onChangeHandler = (setter) => (event, selectedValue) => {
-      if (selectedValue) {
+      if (event.type === "set" && selectedValue) {
         setter(selectedValue);
       }
     }
@@ -125,26 +138,25 @@ export default function ReservationScreen({navigation}) {
         <View style={styles.row}>
           <View style={styles.column}>
             <Text style={styles.datetext}>Välj Starttid</Text>
-                    <DateTimePicker
-        style={styles.datetime}
-        testID="StartDatePicker"
-          value={startDate}
-          mode={'date'}
-          is24Hour={true}
-          display="default"
-          onChange={onChangeHandler(setStartDate)}
-          minimumDate={todaysDate}
-          maximumDate={tomorrowsDate}
-        />
-        <DateTimePicker
-        style={styles.datetime}
-        testID="StartTimePicker"
-          value={startTime}
-          mode={'time'}
-          is24Hour={true}
-          display="default"
-          onChange={onChangeHandler(setStartTime)}
-        />
+              <DateTimePicker
+                testID="StartDatePicker"
+                value={startDate}
+                mode={'date'}
+                is24Hour={true}
+                display="default"
+                onChange={onChangeHandler(setStartDate)}
+                minimumDate={todaysDate}
+                maximumDate={tomorrowsDate}
+              />
+              <DateTimePicker
+                style={styles.datetime}
+                testID="StartTimePicker"
+                value={startTime}
+                mode={'time'}
+                is24Hour={true}
+                display="default"
+                onChange={onChangeHandler(setStartTime)}
+              />
 
         <Text style={styles.datetext}>{new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes()).toString()}</Text>
           </View>
