@@ -17,47 +17,33 @@ export default function ReservationScreen({navigation}) {
 
   const {current_user} = useContext(UserContext);
 
-    const [selected_locker, setLocker] = useState(0);
+    const [selectedLocker, setLocker] = useState('(ej valt)');
     
-    const [start_date, setStartDate] = useState(new Date());
-    const [start_time, setStartTime] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date());
+    const [startTime, setStartTime] = useState(new Date());
 
-    const [end_date, setEndDate] = useState(new Date());
-    const [end_time, setEndTime] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [endTime, setEndTime] = useState(new Date());
 
-    const onChangeStartDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setStartDate(currentDate);
-    };
+    const onChangeHandler = (setter) => (event, selectedValue) => {
+      if (selectedValue) {
+        setter(selectedValue);
+      }
+    }
 
-    const onChangeStartTime = (event, selectedTime) => {
-        const currentTime = selectedTime || time;
-        setStartTime(currentTime);
-    };
-
-        const onChangeEndDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setEndDate(currentDate);
-    };
-
-    const onChangeEndTime = (event, selectedTime) => {
-        const currentTime = selectedTime || time;
-        setEndTime(currentTime);
-    };
-
-  const today_date = new Date();
-  const tomorrow_date = new Date(new Date().setDate(new Date().getDate() + 1));
+  const todaysDate = new Date();
+  const tomorrowsDate = new Date(new Date().setDate(new Date().getDate() + 1));
 
   const userCollection = collection(db, 'Reservations');
 
   const sendReservation = async () => {
-    if (await isAvailable(selected_locker)) {
+    if (await isLockerAvailable(selectedLocker)) {
         try {
         await addDoc(userCollection, {
             user: current_user,
-            locker: selected_locker,
-            startdate: Timestamp.fromDate(new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes())),
-            enddate: Timestamp.fromDate(new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes())),
+            locker: selectedLocker,
+            startdate: Timestamp.fromDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes())),
+            enddate: Timestamp.fromDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes())),
         });
         alert("Bokning bekräftad");
     } catch (err) {
@@ -71,7 +57,7 @@ export default function ReservationScreen({navigation}) {
     }
   }
 
-  const isAvailable = async (locker) => {
+  const isLockerAvailable = async (locker) => {
 
     let available = true;
 
@@ -83,11 +69,11 @@ export default function ReservationScreen({navigation}) {
     {
         //https://firebase.google.com/docs/reference/node/firebase.firestore.Timestamp#seconds
         querySnapshot.docs.forEach(document => {
-            const existing_start_date = document.data().startdate.toDate();
-            const existing_end_date = document.data().enddate.toDate();
-            const new_start_date = new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes());
-            const new_end_date = new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes());
-            if ((new_start_date > existing_start_date && new_end_date < existing_end_date) || (new_start_date < existing_start_date && new_end_date > existing_start_date) || (new_start_date < existing_end_date && new_end_date > existing_end_date))
+            const existingStartDate = document.data().startdate.toDate();
+            const existingEndDate = document.data().enddate.toDate();
+            const newStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes());
+            const newEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes());
+            if ((newStartDate > existingStartDate && newEndDate < existingEndDate) || (newStartDate < existingStartDate && newEndDate > existingStartDate) || (newStartDate < existingEndDate && newEndDate > existingEndDate))
             {
                 available = false;
             }
@@ -99,61 +85,96 @@ export default function ReservationScreen({navigation}) {
 
     return(
         <View>
-        <Text style={styles.text}>Välj ett skåp att reservera</Text>
-        <TouchableOpacity
-            style={styles.button}
-            onPress={() => setLocker(0)}
-            
-        >
-            <Text style={styles.buttontext}>Skåp 1</Text>
-        </TouchableOpacity>
-        <View>
-        </View>
+          <Text style={styles.text}>Välj ett skåp att reservera</Text>
 
-        <DateTimePicker
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <TouchableOpacity
+              style={styles.lockerleft}
+              onPress={() => setLocker(1)}
+              >
+              <Text style={styles.buttontext}>1</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+              style={styles.lockerleft}
+              onPress={() => setLocker(3)}
+              >
+              <Text style={styles.buttontext}>3</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.column}>
+            <TouchableOpacity
+              style={styles.lockerright}
+              onPress={() => setLocker(2)}
+              >
+              <Text style={styles.buttontext}>2</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+              style={styles.lockerright}
+              onPress={() => setLocker(4)}
+              >
+              <Text style={styles.buttontext}>4</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+          <Text style={styles.text}>Du har valt skåp {selectedLocker}</Text>
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text style={styles.datetext}>Välj Starttid</Text>
+                    <DateTimePicker
         style={styles.datetime}
         testID="StartDatePicker"
-          value={start_date}
+          value={startDate}
           mode={'date'}
           is24Hour={true}
           display="default"
-          onChange={onChangeStartDate}
-          minimumDate={today_date}
-          maximumDate={tomorrow_date}
+          onChange={onChangeHandler(setStartDate)}
+          minimumDate={todaysDate}
+          maximumDate={tomorrowsDate}
         />
         <DateTimePicker
         style={styles.datetime}
         testID="StartTimePicker"
-          value={start_time}
+          value={startTime}
           mode={'time'}
           is24Hour={true}
           display="default"
-          onChange={onChangeStartTime}
+          onChange={onChangeHandler(setStartTime)}
         />
 
-        <DateTimePicker
+        <Text style={styles.datetext}>{new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes()).toString()}</Text>
+          </View>
+
+          <View style={styles.column}>
+            <Text style={styles.datetext}>Välj sluttid</Text>
+            <DateTimePicker
         style={styles.datetime}
         testID="EndDatePicker"
-          value={end_date}
+          value={endDate}
           mode={'date'}
           is24Hour={true}
           display="default"
-          onChange={onChangeEndDate}
-          minimumDate={today_date}
-          maximumDate={tomorrow_date}
+          onChange={onChangeHandler(setEndDate)}
+          minimumDate={todaysDate}
+          maximumDate={tomorrowsDate}
         />
         <DateTimePicker
         style={styles.datetime}
         testID="EndTimePicker"
-          value={end_time}
+          value={endTime}
           mode={'time'}
           is24Hour={true}
           display="default"
-          onChange={onChangeEndTime}
+          onChange={onChangeHandler(setEndTime)}
         />
-        <Text style={styles.text}>{new Date(start_date.getFullYear(), start_date.getMonth(), start_date.getDate(), start_time.getHours(), start_time.getMinutes()).toString()}</Text>
 
-        <Text style={styles.text}>{new Date(end_date.getFullYear(), end_date.getMonth(), end_date.getDate(), end_time.getHours(), end_time.getMinutes()).toString()}</Text>
+        <Text style={styles.datetext}>{new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes()).toString()}</Text>
+          </View>
+        </View>
 
         <TouchableOpacity style={styles.btnconfirm}
         
@@ -174,14 +195,26 @@ const styles = StyleSheet.create({
   text: {
     alignSelf: 'center',
     fontSize: 32,
-    margin: 20,
+    margin: 5,
+  },
+  datetext: {
+    fontSize: 24,
+    marginTop: 10,
   },
   //https://stackoverflow.com/questions/44798426/how-to-change-background-color-of-react-native-button
-  button: {
+  lockerleft: {
     backgroundColor: 'rgb(156, 194, 218)',
     height: 150,
     width: 150,
-    alignSelf: 'center',
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    borderWidth: 5,
+  },
+  lockerright: {
+    backgroundColor: 'rgb(156, 194, 218)',
+    height: 150,
+    width: 150,
+    alignSelf: 'flex-start',
     justifyContent: 'center',
     borderWidth: 5,
   },
@@ -194,11 +227,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#a0a0a0',
     justifyContent: 'center',
     alignSelf: 'center',
+    marginTop: 20,
     height: 80,
     width: 300,
   },
   datetime: {
-    marginTop: 20,
+    marginTop: 10,
     alignSelf: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  column: {
+    flexDirection: 'column',
+    flex: 1,
+    alignItems: 'center',
   },
 });
