@@ -1,14 +1,46 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { View, TextInput, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 // Firebase
 import { db } from '../firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
-const CustomLogin = ( {CurrentUser, UserSelected} ) => {
+import { UserContext } from "../context/UserContext";
+
+const CustomLogin = () => {
+
+    const {setCurrentUser, setIsUserSelected} = useContext(UserContext);
 
     const [user_email, setEmail] = useState('');
     const [user_password, setPassword] = useState('');
+
+    //https://rnfirebase.io/firestore/usage
+const FirestoreLogin = async () => {
+
+    const userCollection = collection(db, 'Users');
+    const q = query(userCollection, where('email', '==', user_email));
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        if (data.password != user_password)
+        {
+            alert("felaktigt lösenord");
+        }
+        else
+        {
+            setCurrentUser(user_email);
+            setIsUserSelected(true);
+        }
+    }
+    else
+    {
+        alert("Användare hittas inte");
+    }
+
+}
 
     return(
         <View style={styles.view}>
@@ -26,7 +58,7 @@ const CustomLogin = ( {CurrentUser, UserSelected} ) => {
 
             <TouchableOpacity
             style={styles.btnloggain}
-            onPress={() => FirestoreLogin(user_email, user_password, CurrentUser, UserSelected)}
+            onPress={() => FirestoreLogin(user_email, user_password)}
             >   
 
             <Text style={styles.btnloggaintext}>Logga in</Text>
@@ -34,34 +66,6 @@ const CustomLogin = ( {CurrentUser, UserSelected} ) => {
         </View>
 
     );
-}
-
-//https://rnfirebase.io/firestore/usage
-const FirestoreLogin = async (user_email, user_password, CurrentUser, UserSelected) => {
-
-    const userCollection = collection(db, 'Users');
-    const q = query(userCollection, where('email', '==', user_email));
-
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
-        if (data.password != user_password)
-        {
-            alert("felaktigt lösenord");
-        }
-        else
-        {
-            CurrentUser(user_email);
-            UserSelected(true);
-        }
-    }
-    else
-    {
-        alert("Användare hittas inte");
-    }
-
 }
 
 const LoginTextInput = ({placeholder, value, onChangeText}) => {

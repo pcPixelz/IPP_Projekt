@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
 import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from "firebase/firestore";
+
+import { UserContext } from "../context/UserContext";
 
 
 //DateTimePicker
@@ -11,9 +13,9 @@ import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from
 //https://docs.expo.dev/versions/latest/sdk/date-time-picker/
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-export default function ReservationScreen({navigation, route}) {
+export default function ReservationScreen({navigation}) {
 
-    const {current_user} = route.params;
+  const {current_user} = useContext(UserContext);
 
     const [selected_locker, setLocker] = useState(0);
     

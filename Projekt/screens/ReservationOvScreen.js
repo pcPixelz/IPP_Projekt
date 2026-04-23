@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, FlatList } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
 import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from "firebase/firestore";
+
+import { UserContext } from "../context/UserContext";
 
 class Reservation {
     constructor(user, locker, start_date, end_date) {
@@ -16,9 +18,9 @@ class Reservation {
 
 const userCollection = collection(db, 'Reservations');
 
-export default function ReservationOvScreen({navigation, route}) {
+export default function ReservationOvScreen({navigation}) {
 
-    const {current_user} = route.params;
+    const {current_user} = useContext(UserContext);
 
     const[list, setList] = useState([]);
 

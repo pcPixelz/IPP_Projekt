@@ -2,7 +2,9 @@ import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import { UserProvider } from "./context/UserContext";
 
 
 import HomeScreen from "./screens/HomeScreen";
@@ -14,10 +16,12 @@ import ReservationOvScreen from "./screens/ReservationOvScreen";
 
 export default function App() {
   return (
+    <UserProvider>
       <NavigationContainer>
-      <MyStack />
-      <StatusBar style="auto" />
-    </NavigationContainer>
+        <MyStack />
+          <StatusBar style="auto" />
+      </NavigationContainer>
+    </UserProvider>
     
   );
 }

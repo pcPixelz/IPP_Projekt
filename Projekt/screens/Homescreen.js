@@ -1,20 +1,19 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import CustomLogin from '../components/customlogin';
 
+import { UserContext } from "../context/UserContext";
+
 export default function Homescreen({navigation}) {
 
-  const [currentuser, setCurrentUser] = useState('(ej inloggad)');
-  const [user_selected, setUserSelected] = useState(false);
+  const {current_user, is_user_selected, setCurrentUser, setIsUserSelected} = useContext(UserContext);
 
   return(
         <View style={styles.container}>
-              <Text style={styles.headertext}>Du är inloggad som {currentuser}</Text>
+              <Text style={styles.headertext}>Du är inloggad som {current_user}</Text>
               <CustomLogin
-              CurrentUser = {setCurrentUser}
-              UserSelected = {setUserSelected}
               />
               <Button
               title="Go to Profile"
@@ -23,13 +22,13 @@ export default function Homescreen({navigation}) {
               />
               <Button
               title="Bokning"
-              disabled={!user_selected}
-              onPress={() => navigation.navigate("Bokning", {current_user: currentuser})}
+              disabled={!is_user_selected}
+              onPress={() => navigation.navigate("Bokning")}
               />
               <Button
               title='Bokningsöversikt'
-              disabled={!user_selected}
-              onPress={() => navigation.navigate("Boknings Översikt", {current_user: currentuser})}/>
+              disabled={!is_user_selected}
+              onPress={() => navigation.navigate("Boknings Översikt")}/>
               <StatusBar style="auto" />
             </View>
     );
