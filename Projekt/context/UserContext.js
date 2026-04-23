@@ -1,8 +1,9 @@
 import { createContext, useState } from "react";
 
-export const UserContext = createContext();
+export const UserContext = createContext(); // skapa context objekt, detta är en global behållare
 
 export function UserProvider({ children }) {
+    
     const [current_user, setCurrentUser] = useState('(ej inloggad)');
     const [is_user_selected, setIsUserSelected] = useState(false);
 
@@ -12,7 +13,8 @@ export function UserProvider({ children }) {
             current_user, setCurrentUser, is_user_selected, setIsUserSelected
         }}
         >
-            {children}
+            {children} 
+            { /*allt som inkapslas i UserContext.Provider i App.js */ }
         </UserContext.Provider>
     );
 }

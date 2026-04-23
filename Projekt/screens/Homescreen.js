@@ -1,5 +1,5 @@
-import React, {useContext, useState} from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import {useContext} from 'react';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import CustomLogin from '../components/customlogin';
@@ -8,7 +8,7 @@ import { UserContext } from "../context/UserContext";
 
 export default function Homescreen({navigation}) {
 
-  const {current_user, is_user_selected, setCurrentUser, setIsUserSelected} = useContext(UserContext);
+  const {current_user, is_user_selected} = useContext(UserContext);
 
   return(
         <View style={styles.container}>
@@ -18,7 +18,7 @@ export default function Homescreen({navigation}) {
               <Button
               title="Go to Profile"
               onPress={() => navigation.navigate("Profile")}
-              disabled={false}
+              disabled={true}
               />
               <Button
               title="Bokning"
@@ -26,9 +26,9 @@ export default function Homescreen({navigation}) {
               onPress={() => navigation.navigate("Bokning")}
               />
               <Button
-              title='Bokningsöversikt'
+              title='Boknings Översikt'
               disabled={!is_user_selected}
-              onPress={() => navigation.navigate("Boknings Översikt")}/>
+              onPress={() => navigation.navigate("ReservationOv")}/>
               <StatusBar style="auto" />
             </View>
     );

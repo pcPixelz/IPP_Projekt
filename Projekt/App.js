@@ -34,7 +34,7 @@ function MyStack() {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name='Bokning' component={ReservationScreen} />
-      <Stack.Screen name='Boknings Översikt' component={ReservationOvScreen} />
+      <Stack.Screen name='ReservationOv' component={ReservationOvScreen} />
     </Stack.Navigator>
   );
 }

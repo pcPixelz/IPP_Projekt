@@ -1,11 +1,35 @@
 import React, {useContext, useState} from 'react';
-import { View, TextInput, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 // Firebase
 import { db } from '../firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 import { UserContext } from "../context/UserContext";
+
+//https://rnfirebase.io/firestore/usage
+const FirestoreLogin = async (user_email, user_password) => {
+
+    const userCollection = collection(db, 'Users');
+    const q = query(userCollection, where('email', '==', user_email));
+
+    const querySnapshot = await getDocs(q);
+
+    if(querySnapshot.empty) {
+        return {isuserselected: false, error: "Användare med den mailadressen hittas inte."};
+    }
+    else {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        if (data.password != user_password) {
+            return {isuserselected: false, error: "Lösenordet stämmer inte."};
+        }
+        else {
+            return {isuserselected: true}
+        }
+    }
+
+}
 
 const CustomLogin = () => {
 
@@ -14,37 +38,21 @@ const CustomLogin = () => {
     const [user_email, setEmail] = useState('');
     const [user_password, setPassword] = useState('');
 
-    //https://rnfirebase.io/firestore/usage
-const FirestoreLogin = async () => {
+    const HandleLogin = async () => {
+        const function_return = await FirestoreLogin(user_email, user_password);
 
-    const userCollection = collection(db, 'Users');
-    const q = query(userCollection, where('email', '==', user_email));
-
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        const data = doc.data();
-        if (data.password != user_password)
-        {
-            alert("felaktigt lösenord");
+        if(!function_return.isuserselected) {
+            alert(function_return.error);
         }
-        else
-        {
+        else {
             setCurrentUser(user_email);
             setIsUserSelected(true);
         }
     }
-    else
-    {
-        alert("Användare hittas inte");
-    }
-
-}
 
     return(
         <View style={styles.view}>
-            <Text style={styles.text}>Logga in</Text>
+            <Text style={styles.text}>Logga in på Skåpshjälten</Text>
             <LoginTextInput
             placeholder="Mail"
             value={user_email}
@@ -58,7 +66,7 @@ const FirestoreLogin = async () => {
 
             <TouchableOpacity
             style={styles.btnloggain}
-            onPress={() => FirestoreLogin(user_email, user_password)}
+            onPress={() => HandleLogin()}
             >   
 
             <Text style={styles.btnloggaintext}>Logga in</Text>
@@ -84,7 +92,7 @@ const LoginTextInput = ({placeholder, value, onChangeText}) => {
 
 const styles = StyleSheet.create({
     view: {
-        backgroundColor: 'rgb(156, 194, 218)',
+        backgroundColor: 'rgb(206, 206, 206)',
         padding: 10,
         paddingLeft: 20,
         paddingRight: 20,
