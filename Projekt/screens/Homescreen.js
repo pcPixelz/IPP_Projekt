@@ -20,15 +20,25 @@ export default function Homescreen({navigation}) {
               onPress={() => navigation.navigate("Profile")}
               disabled={true}
               />
-              <Button
-              title="Bokning"
+              <TouchableOpacity 
+              style={[styles.btnstyle,
+                !is_user_selected && styles.btnstyledisabled
+              ]}
               disabled={!is_user_selected}
               onPress={() => navigation.navigate("Bokning")}
-              />
-              <Button
-              title='Boknings Översikt'
+              >
+                <Text style={styles.text}>Boka skåp</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+              style={[styles.btnstyle,
+                !is_user_selected && styles.btnstyledisabled
+              ]}
               disabled={!is_user_selected}
-              onPress={() => navigation.navigate("ReservationOv")}/>
+              onPress={() => navigation.navigate("Bokningsöversikt")}
+              >
+                <Text style={styles.text}>Bokningsöversikt</Text>
+              </TouchableOpacity>
               <StatusBar style="auto" />
             </View>
     );
@@ -45,5 +55,22 @@ const styles = StyleSheet.create({
   headertext: {
     fontSize: 24,
     marginBottom: 50,
-  }
+  },
+    btnstyle: {
+    backgroundColor: 'rgb(206, 206, 206)',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 80,
+    width: 300,
+    margin: 5,
+  },
+    btnstyledisabled: {
+    height: 0,
+    width: 0,
+  },
+    text: {
+    alignSelf: 'center',
+    fontSize: 32,
+    margin: 20,
+  },
 });
