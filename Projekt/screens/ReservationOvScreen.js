@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, FlatList } from 'react-native';
 
 //Firebase, firestore
@@ -20,6 +20,10 @@ const userCollection = collection(db, 'Reservations');
 
 export default function ReservationOvScreen({navigation}) {
 
+    useEffect(() => {
+    FetchReservationInfo();
+    }, []);
+
     const {currentUser} = useContext(UserContext);
 
     const[list, setList] = useState([]);
@@ -34,7 +38,7 @@ export default function ReservationOvScreen({navigation}) {
         if(!querySnapshot.empty)
         {
             querySnapshot.docs.forEach(field => {
-                const r = new Reservation(field.data().user, field.data().locker, field.data().startDate.toDate(), field.data().endDate.toDate());
+                const r = new Reservation(field.data().user, field.data().locker, field.data().startdate.toDate(), field.data().enddate.toDate());
                 newList.push(r);
             });
         }
@@ -44,15 +48,30 @@ export default function ReservationOvScreen({navigation}) {
 
     return(
         <View>
-            <Button
-            title='fetch'
-            onPress={() => FetchReservationInfo()}/>
+            <Text style={styles.text1}>Dina reservationer</Text>
 
             <FlatList
             data={list}
-            renderItem={({item}) => (<Text>{item.user} - {item.locker} - {item.startDate.toString()} - {item.endDate.toString()}</Text>)}
+            renderItem={({item}) => (
+            <Text style={styles.text2}>Skåp {item.locker} {'\n'} 
+            Från: {item.startDate.toString()} {'\n'}
+            Till {item.endDate.toString()}
+            </Text>)}
             keyExtractor={(item, index) => index.toString()}
             />
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    text1: {
+    alignSelf: 'center',
+    fontSize: 32,
+    margin: 5,
+  },
+  text2: {
+    alignSelf: 'center',
+    fontSize: 20,
+    margin: 5,
+  },
+});

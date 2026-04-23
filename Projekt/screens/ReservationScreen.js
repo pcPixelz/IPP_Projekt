@@ -45,7 +45,7 @@ export default function ReservationScreen({navigation}) {
             startdate: Timestamp.fromDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes())),
             enddate: Timestamp.fromDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes())),
         });
-        alert("Bokning bekräftad");
+        alert("Bokningen för skåp " + selectedLocker + " är bekräftad.");
     } catch (err) {
       console.log(err);
       alert("Error sending reservation data");
@@ -53,7 +53,7 @@ export default function ReservationScreen({navigation}) {
     }
     else
     {
-        alert("Skåp uptaget");
+        alert("Skåpet är uptaget. Välj en annan tid eller skåp");
     }
   }
 
@@ -73,7 +73,7 @@ export default function ReservationScreen({navigation}) {
             const existingEndDate = document.data().enddate.toDate();
             const newStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes());
             const newEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes());
-            if ((newStartDate > existingStartDate && newEndDate < existingEndDate) || (newStartDate < existingStartDate && newEndDate > existingStartDate) || (newStartDate < existingEndDate && newEndDate > existingEndDate))
+            if (newStartDate < existingEndDate && newEndDate > existingStartDate)
             {
                 available = false;
             }
