@@ -26,6 +26,10 @@ export default function Homescreen({navigation}) {
               disabled={!user_selected}
               onPress={() => navigation.navigate("Bokning", {current_user: currentuser})}
               />
+              <Button
+              title='Bokningsöversikt'
+              disabled={!user_selected}
+              onPress={() => navigation.navigate("Boknings Översikt", {current_user: currentuser})}/>
               <StatusBar style="auto" />
             </View>
     );
