@@ -15,9 +15,9 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default function ReservationScreen({navigation}) {
 
-  const {current_user} = useContext(UserContext);
+  const {currentUser} = useContext(UserContext);
 
-    const [selectedLocker, setLocker] = useState('(ej valt)');
+    const [selectedLocker, setLocker] = useState(1);
     
     const [startDate, setStartDate] = useState(new Date());
     const [startTime, setStartTime] = useState(new Date());
@@ -40,7 +40,7 @@ export default function ReservationScreen({navigation}) {
     if (await isLockerAvailable(selectedLocker)) {
         try {
         await addDoc(userCollection, {
-            user: current_user,
+            user: currentUser,
             locker: selectedLocker,
             startdate: Timestamp.fromDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes())),
             enddate: Timestamp.fromDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes())),

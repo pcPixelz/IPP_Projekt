@@ -8,11 +8,11 @@ import { UserContext } from "../context/UserContext";
 
 export default function Homescreen({navigation}) {
 
-  const {current_user, is_user_selected} = useContext(UserContext);
+  const {currentUser, isUserSelected} = useContext(UserContext);
 
   return(
         <View style={styles.container}>
-              <Text style={styles.headertext}>Du är inloggad som {current_user}</Text>
+              <Text style={styles.headertext}>Du är inloggad som {currentUser}</Text>
               <CustomLogin
               />
               <Button
@@ -22,9 +22,9 @@ export default function Homescreen({navigation}) {
               />
               <TouchableOpacity 
               style={[styles.btnstyle,
-                !is_user_selected && styles.btnstyledisabled
+                !isUserSelected && styles.btnstyledisabled
               ]}
-              disabled={!is_user_selected}
+              disabled={!isUserSelected}
               onPress={() => navigation.navigate("Bokning")}
               >
                 <Text style={styles.text}>Boka skåp</Text>
@@ -32,9 +32,9 @@ export default function Homescreen({navigation}) {
 
               <TouchableOpacity 
               style={[styles.btnstyle,
-                !is_user_selected && styles.btnstyledisabled
+                !isUserSelected && styles.btnstyledisabled
               ]}
-              disabled={!is_user_selected}
+              disabled={!isUserSelected}
               onPress={() => navigation.navigate("Bokningsöversikt")}
               >
                 <Text style={styles.text}>Bokningsöversikt</Text>

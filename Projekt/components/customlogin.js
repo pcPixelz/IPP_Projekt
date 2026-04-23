@@ -8,24 +8,24 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { UserContext } from "../context/UserContext";
 
 //https://rnfirebase.io/firestore/usage
-const FirestoreLogin = async (user_email, user_password) => {
+const FirestoreLogin = async (userEmail, userPassword) => {
 
     const userCollection = collection(db, 'Users');
-    const q = query(userCollection, where('email', '==', user_email));
+    const q = query(userCollection, where('email', '==', userEmail));
 
     const querySnapshot = await getDocs(q);
 
     if(querySnapshot.empty) {
-        return {isuserselected: false, error: "Användare med den mailadressen hittas inte."};
+        return {isUserSelected: false, error: "Användare med den mailadressen hittas inte."};
     }
     else {
         const doc = querySnapshot.docs[0];
         const data = doc.data();
-        if (data.password != user_password) {
-            return {isuserselected: false, error: "Lösenordet stämmer inte."};
+        if (data.password != userPassword) {
+            return {isUserSelected: false, error: "Lösenordet stämmer inte."};
         }
         else {
-            return {isuserselected: true}
+            return {isUserSelected: true}
         }
     }
 
@@ -35,17 +35,17 @@ const CustomLogin = () => {
 
     const {setCurrentUser, setIsUserSelected} = useContext(UserContext);
 
-    const [user_email, setEmail] = useState('');
-    const [user_password, setPassword] = useState('');
+    const [userEmail, setEmail] = useState('');
+    const [userPassword, setPassword] = useState('');
 
     const HandleLogin = async () => {
-        const function_return = await FirestoreLogin(user_email, user_password);
+        const function_return = await FirestoreLogin(userEmail, userPassword);
 
-        if(!function_return.isuserselected) {
+        if(!function_return.isUserSelected) {
             alert(function_return.error);
         }
         else {
-            setCurrentUser(user_email);
+            setCurrentUser(userEmail);
             setIsUserSelected(true);
         }
     }
@@ -55,12 +55,12 @@ const CustomLogin = () => {
             <Text style={styles.text}>Logga in på Skåpshjälten</Text>
             <LoginTextInput
             placeholder="Mail"
-            value={user_email}
+            value={userEmail}
             onChangeText={setEmail}
             />
             <LoginTextInput
             placeholder="Lösenord"
-            value={user_password}
+            value={userPassword}
             onChangeText={setPassword}
             />
 

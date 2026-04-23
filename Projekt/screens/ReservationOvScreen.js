@@ -8,11 +8,11 @@ import { collection, addDoc, Timestamp, query, where, getDocs, onSnapshot } from
 import { UserContext } from "../context/UserContext";
 
 class Reservation {
-    constructor(user, locker, start_date, end_date) {
+    constructor(user, locker, startDate, endDate) {
         this.user = user;
         this.locker = locker;
-        this.start_date = start_date;
-        this.end_date = end_date;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }
 
@@ -20,37 +20,37 @@ const userCollection = collection(db, 'Reservations');
 
 export default function ReservationOvScreen({navigation}) {
 
-    const {current_user} = useContext(UserContext);
+    const {currentUser} = useContext(UserContext);
 
     const[list, setList] = useState([]);
 
-    const fetchReservationInfo = async () => {
-        const q = query(userCollection, where('user', '==', current_user));
+    const FetchReservationInfo = async () => {
+        const q = query(userCollection, where('user', '==', currentUser));
 
         const querySnapshot = await getDocs(q);
 
-        let newlist = [];
+        let newList = [];
 
         if(!querySnapshot.empty)
         {
             querySnapshot.docs.forEach(field => {
-                const r = new Reservation(field.data().user, field.data().locker, field.data().start_date.toDate(), field.data().end_date.toDate());
-                newlist.push(r);
+                const r = new Reservation(field.data().user, field.data().locker, field.data().startDate.toDate(), field.data().endDate.toDate());
+                newList.push(r);
             });
         }
 
-        setList(newlist);
+        setList(newList);
     } 
 
     return(
         <View>
             <Button
             title='fetch'
-            onPress={() => fetchReservationInfo()}/>
+            onPress={() => FetchReservationInfo()}/>
 
             <FlatList
             data={list}
-            renderItem={({item}) => (<Text>{item.user} - {item.locker} - {item.start_date.toString()} - {item.end_date.toString()}</Text>)}
+            renderItem={({item}) => (<Text>{item.user} - {item.locker} - {item.startDate.toString()} - {item.endDate.toString()}</Text>)}
             keyExtractor={(item, index) => index.toString()}
             />
         </View>
