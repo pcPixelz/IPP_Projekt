@@ -69,6 +69,7 @@ byte frameWifiConnected[8][12] = {
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(13, OUTPUT);
 
   Serial.begin(9600);
 
@@ -96,14 +97,16 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   //sendToFirestore();
-  int value = readIntFromFirestore("led", "test", "demo1"); //i firebase, (field, collection, document)
-  if(value == 1)
+  bool value = readBoolFromFirestore("islocked", "Reservations", "demo1"); //i firebase, (field, collection, document)
+  if(value == true)
   {
       matrix.renderBitmap(frameOpen, 8, 12);
+      digitalWrite(13, LOW);
   }
-  else if (value == 0)
+  else if (value == false)
   {
       matrix.renderBitmap(frameClose, 8, 12);
+      digitalWrite(13, HIGH);
   }
   else
   {
@@ -142,7 +145,7 @@ void sendToFirestore() {
   Serial.println(response);
 }
 
-int readIntFromFirestore(String field, String firebase_collection, String firebase_document) {
+bool readBoolFromFirestore(String field, String firebase_collection, String firebase_document) {
   String url = "/v1/projects/" + projectId + "/databases/(default)/documents/" + firebase_collection + "/" + firebase_document + "?key=" + apiKey;
 
 //https://github.com/arduino-libraries/ArduinoHttpClient/blob/master/examples/SimpleGet/SimpleGet.ino
@@ -164,7 +167,8 @@ int readIntFromFirestore(String field, String firebase_collection, String fireba
     return -1;
   }
 
-  int field_value = doc["fields"][field]["integerValue"];
+  bool field_value = doc["fields"][field]["booleanValue"];
+  field_value = !field_value;
 
   Serial.println("field_value:" + String(field_value));
 
