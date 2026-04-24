@@ -1,14 +1,15 @@
 import {useContext, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, FlatList } from 'react-native';
 
 //Firebase, firestore
 import { db } from "../firebaseConfig";
-import { collection, addDoc, Timestamp, query, where, getDocs} from "firebase/firestore";
+import { collection, query, where, getDocs, setDoc, doc} from "firebase/firestore";
 
 import { UserContext } from "../context/UserContext";
 
 class Reservation {
-    constructor(user, locker, startDate, endDate) {
+    constructor(documentId, user, locker, startDate, endDate) {
+        this.documentId = documentId;
         this.user = user;
         this.locker = locker;
         this.startDate = startDate;
@@ -22,9 +23,9 @@ export default function LockerScreen ({ navigation }) {
     FetchReservationInfo();
     }, []);
     
-    const {currentUser} = useContext(UserContext);
-
     const userCollection = collection(db, 'Reservations');
+
+    const {currentUser} = useContext(UserContext);
     
     const[list, setList] = useState([]);
     const[activeReservations, setActiveReservations] = useState([]);
@@ -39,7 +40,7 @@ export default function LockerScreen ({ navigation }) {
         if(!querySnapshot.empty)
         {
             querySnapshot.docs.forEach(field => {
-                const r = new Reservation(field.data().user, field.data().locker, field.data().startdate.toDate(), field.data().enddate.toDate());
+                const r = new Reservation(field.id, field.data().user, field.data().locker, field.data().startdate.toDate(), field.data().enddate.toDate());
                 newList.push(r);
             });
         }
@@ -67,6 +68,25 @@ export default function LockerScreen ({ navigation }) {
         return newList;
     }
 
+    const sendData = async (isLocked) => {
+        try {
+            const id = activeReservations[0].documentId;
+            await setDoc(doc(db, "Reservations", id), {
+                islocked: isLocked
+            }, 
+            {merge: true
+
+            });
+            if(isLocked){
+                alert("Skåpet har låsts");
+            } else {
+                alert("Skåpet har låsts upp")
+            }
+        } catch (err) {
+            alert("Det gick inte att nå skåpet.");
+        }
+    }
+
     return(
         <View>
             <Text style={styles.text1}>Du har en nuvarande bokning på detta skåp</Text>
@@ -74,9 +94,18 @@ export default function LockerScreen ({ navigation }) {
             <FlatList
                 data={activeReservations}
                 renderItem={({item}) => (
-                <Text style={styles.text2}>Skåp {item.locker} {'\n'} 
-                Bokningen avslutas {item.endDate.toString()}
-                </Text>)}
+                <View>
+                    <Text style={styles.text2}>Skåp {item.locker} {'\n'} 
+                    Bokningen avslutas {item.endDate.toString()}
+                    </Text>
+                    <Button
+                    title="Lås skåpet"
+                    onPress={() => sendData(true)}/>
+                    <Button
+                    title="Öppna skåpet"
+                    onPress={() => sendData(false)}/>
+                </View>
+                )}
                 keyExtractor={(item, index) => index.toString()}
             />
         </View>
