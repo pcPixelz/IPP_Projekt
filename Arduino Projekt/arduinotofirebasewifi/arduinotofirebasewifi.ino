@@ -101,18 +101,18 @@ void loop() {
   if(value == true)
   {
       matrix.renderBitmap(frameOpen, 8, 12);
-      digitalWrite(13, LOW);
+      digitalWrite(13, HIGH);
   }
   else if (value == false)
   {
       matrix.renderBitmap(frameClose, 8, 12);
-      digitalWrite(13, HIGH);
+      digitalWrite(13, LOW);
   }
   else
   {
     matrix.renderBitmap(frameStandard, 8, 12);
   }
-  delay(3000); // vänta x/1000 sek mellan skicka/läsa
+  delay(500); // vänta x/1000 sek mellan skicka/läsa
 
 }
 
