@@ -68,7 +68,7 @@ export default function LockerScreen ({ navigation }) {
         return newList;
     }
 
-    const sendData = async (isLocked) => {
+    const SendData = async (isLocked) => {
         try {
             const id = activeReservations[0].documentId;
             await setDoc(doc(db, "Reservations", id), {
@@ -100,10 +100,10 @@ export default function LockerScreen ({ navigation }) {
                     </Text>
                     <Button
                     title="Lås skåpet"
-                    onPress={() => sendData(true)}/>
+                    onPress={() => SendData(true)}/>
                     <Button
                     title="Öppna skåpet"
-                    onPress={() => sendData(false)}/>
+                    onPress={() => SendData(false)}/>
                 </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}

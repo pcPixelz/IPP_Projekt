@@ -48,7 +48,7 @@ export default function ReservationOvScreen({navigation}) {
 
     return(
         <View>
-            <Text style={styles.text1}>Dina reservationer</Text>
+            <Text style={styles.text1}>Dina Bokningar</Text>
 
             <FlatList
             data={list}

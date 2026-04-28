@@ -49,7 +49,7 @@ export default function ReservationScreen({navigation}) {
 
   const userCollection = collection(db, 'Reservations');
 
-  const sendReservation = async () => {
+  const SendReservation = async () => {
     if (await isLockerAvailable(selectedLocker)) {
         try {
         await addDoc(userCollection, {
@@ -191,7 +191,7 @@ export default function ReservationScreen({navigation}) {
 
         <TouchableOpacity style={styles.btnconfirm}
         
-        onPress={() => sendReservation()}>
+        onPress={() => SendReservation()}>
             <Text style={styles.text}>Bekräfta bokning</Text>
         </TouchableOpacity>
     </View>
