@@ -16,11 +16,6 @@ export default function Homescreen({navigation}) {
               <Text style={styles.headertext}>Du är inloggad som {currentUser}</Text>
               <CustomLogin
               />
-              <Button
-              title="Go to Profile"
-              onPress={() => navigation.navigate("Profile")}
-              disabled={true}
-              />
               <TouchableOpacity 
               style={[styles.btnstyle,
                 !isUserSelected && styles.btnstyledisabled
