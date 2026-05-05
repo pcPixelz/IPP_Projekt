@@ -4,6 +4,19 @@
 //https://arduinojson.org/
 #include <ArduinoJson.h>
 
+//https://peppe8o.com/rfid-with-arduino-uno-rc522-wiring-and-code/
+#include <SPI.h>
+#include <MFRC522.h>
+#define SS_PIN 10
+#define RST_PIN 9
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+unsigned long lastGet = 0;
+const long interval = 7000;
+
+bool currentLockerStatus = true;
+
 #include "projectsecrets.h"
 
 WiFiSSLClient wificlient;
@@ -69,9 +82,13 @@ byte frameWifiConnected[8][12] = {
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(13, OUTPUT);
 
   Serial.begin(9600);
+
+  pinMode(7, OUTPUT);
+
+  SPI.begin();          // Initiate  SPI bus (källa vid include)
+  mfrc522.PCD_Init();   // Initiate MFRC522
 
 //Kopplar från föregående wifi och kopplar sedan till det nya. I detta fallet är det samma.
   WiFi.disconnect();
@@ -96,41 +113,144 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //sendToFirestore();
-  bool value = readBoolFromFirestore("islocked", "Reservations", "demo1"); //i firebase, (field, collection, document)
-  if(value == true)
+
+  String UID = HandleRFID();
+
+  if(UID != "")
   {
-      matrix.renderBitmap(frameOpen, 8, 12);
-      digitalWrite(13, HIGH);
+   bool useruid = checkUserUID(UID, "taguid", "Users", "Anton");
+   if (useruid) {
+    sendToFirestore();
+    HandleFirestore();
+    return;
+   }
   }
-  else if (value == false)
+
+  unsigned long now = millis();
+
+if (now - lastGet > interval) {
+  lastGet = now;
+  HandleFirestore();
+}
+}
+
+bool checkUserUID(String UID, String field, String firebase_collection, String firebase_document) {
+  String url = "/v1/projects/" + projectId + "/databases/(default)/documents/" + firebase_collection + "/" + firebase_document + "?key=" + apiKey;
+
+//https://github.com/arduino-libraries/ArduinoHttpClient/blob/master/examples/SimpleGet/SimpleGet.ino
+  Serial.println("making GET request");
+  client.get(url);
+
+  // read the status code and body of the response
+  int statusCode = client.responseStatusCode();
+  String response = client.responseBody();
+
+//https://arduinojson.org/v7/example/parser/ json dserialization
+  JsonDocument doc;
+
+  DeserializationError error = deserializeJson(doc, response);
+
+    if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return -1;
+  }
+
+  String field_value = doc["fields"][field]["stringValue"];
+
+  Serial.println("field_value:" + String(field_value));
+
+  Serial.print("Status code: ");
+  Serial.println(statusCode);
+  Serial.print("Response: ");
+  Serial.println(response);
+
+  if(field_value == UID) {
+    return true;
+  }
+
+  return false;
+}
+
+// källa //https://peppe8o.com/rfid-with-arduino-uno-rc522-wiring-and-code/
+String HandleRFID() {
+  if ( ! mfrc522.PICC_IsNewCardPresent())
+  {
+    return "";
+  }
+  if ( ! mfrc522.PICC_ReadCardSerial())
+  {
+    return "";
+  }
+  String content = "";
+
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    if (mfrc522.uid.uidByte[i] < 0x10) {
+      content += "0";
+    }
+    content += String(mfrc522.uid.uidByte[i], HEX);
+  }
+
+  content.toUpperCase();
+
+  Serial.println("UID: " + content);
+
+  mfrc522.PICC_HaltA();
+  mfrc522.PCD_StopCrypto1(); //stänger kommunikation, gör så att läsaren inte fastnar.
+
+  return content;
+}
+
+void HandleFirestore() {
+  bool locked = readBoolFromFirestore("islocked", "Reservations", "demo1");
+  currentLockerStatus = locked;
+
+  if(locked)
   {
       matrix.renderBitmap(frameClose, 8, 12);
-      digitalWrite(13, LOW);
+      digitalWrite(7, LOW);
+  }
+  else if (!locked)
+  {
+      matrix.renderBitmap(frameOpen, 8, 12);
+      digitalWrite(7, HIGH);
   }
   else
   {
     matrix.renderBitmap(frameStandard, 8, 12);
   }
-  delay(500); // vänta x/1000 sek mellan skicka/läsa
-
 }
 
-void sendToFirestore() {
-  String url = "/v1/projects/" + projectId + "/databases/(default)/documents/test/demo2?key=" + apiKey;
 
-  String payload = R"(
-  {
-    "fields": {
-      "led": { "integerValue": "3" },
-      "date": { "stringValue": "arduino" }
+
+void sendToFirestore() {
+  String url = "/v1/projects/" + projectId +
+                "/databases/(default)/documents/Reservations/demo1"
+                "?updateMask.fieldPaths=islocked"
+                "&key=" + apiKey;
+
+  String payload;
+
+  if (currentLockerStatus) {
+    payload = R"(
+    {
+      "fields": {
+        "islocked": { "booleanValue": false }
+      }
     }
+    )";
+  } else {
+    payload = R"(
+    {
+      "fields": {
+        "islocked": { "booleanValue": true }
+      }
+    }
+    )";
   }
-  )";
 
   client.beginRequest();
-  //.post skapar nytt, .patch uppdaterar befintligt.
-  client.post(url);
+  client.patch(url);
   client.sendHeader("Content-Type", "application/json");
   client.sendHeader("Content-Length", payload.length());
   client.beginBody();
@@ -168,7 +288,6 @@ bool readBoolFromFirestore(String field, String firebase_collection, String fire
   }
 
   bool field_value = doc["fields"][field]["booleanValue"];
-  field_value = !field_value;
 
   Serial.println("field_value:" + String(field_value));
 
