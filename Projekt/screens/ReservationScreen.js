@@ -9,7 +9,7 @@ import { UserContext } from "../context/UserContext";
 
 
 //DateTimePicker
-//https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0?utm_source=chatgpt.com
+//https://www.npmjs.com/package/%40react-native-community/datetimepicker/v/5.1.0
 //https://docs.expo.dev/versions/latest/sdk/date-time-picker/
 import DateTimePicker from '@react-native-community/datetimepicker'
 
