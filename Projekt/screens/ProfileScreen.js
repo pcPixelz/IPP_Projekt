@@ -10,6 +10,7 @@ import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 
 export default function Homescreen({navigation}) {
 
+  //DENNA SKÄRM ANVÄNDS INTE I SLUTGILTIGA PROTOTYPEN
     const sendTestData1 = async () => {
     try {
       await setDoc(doc(db, "test", "demo1"), {

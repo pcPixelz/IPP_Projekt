@@ -19,6 +19,7 @@ export default function ReservationScreen({navigation}) {
     SetupFunction();
   }, []);
 
+  //hämtar nuvarande tid och datum
   const SetupFunction = () => {
     const now = new Date();
     setStartDate(now);
@@ -38,6 +39,7 @@ export default function ReservationScreen({navigation}) {
     const [endDate, setEndDate] = useState(new Date());
     const [endTime, setEndTime] = useState(new Date());
 
+    //när användaren ändrar datum och tid används denna
     const onChangeHandler = (setter) => (event, selectedValue) => {
       if (event.type === "set" && selectedValue) {
         setter(selectedValue);
@@ -49,6 +51,7 @@ export default function ReservationScreen({navigation}) {
 
   const userCollection = collection(db, 'Reservations');
 
+  //skickar reservation till databasen
   const SendReservation = async () => {
     if (await isLockerAvailable(selectedLocker)) {
         try {
@@ -57,7 +60,7 @@ export default function ReservationScreen({navigation}) {
             locker: selectedLocker,
             startdate: Timestamp.fromDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startTime.getHours(), startTime.getMinutes())),
             enddate: Timestamp.fromDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endTime.getHours(), endTime.getMinutes())),
-            islocked: true,
+            islocked: true, //standarvärde på låset är låst
         });
         alert("Bokningen för skåp " + selectedLocker + " är bekräftad.");
     } catch (err) {
@@ -71,6 +74,7 @@ export default function ReservationScreen({navigation}) {
     }
   }
 
+  //kollar om ett visst skåp är tillgänglit inom en viss tid.
   const isLockerAvailable = async (locker) => {
 
     let available = true;
@@ -214,6 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginTop: 10,
   },
+  //Användandet av touchable opacity istället för button
   //https://stackoverflow.com/questions/44798426/how-to-change-background-color-of-react-native-button
   lockerleft: {
     backgroundColor: 'rgb(156, 194, 218)',

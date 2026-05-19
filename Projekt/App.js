@@ -29,6 +29,7 @@ export default function App() {
 
 const Stack = createNativeStackNavigator();
 
+// skärmarna som finns i programmet, profile används inte.
 function MyStack() {
   return(
     <Stack.Navigator>

@@ -28,6 +28,7 @@ export default function ReservationOvScreen({navigation}) {
 
     const[list, setList] = useState([]);
 
+    //hämtar reservaitoner som den nuvarande användaren står på.
     const FetchReservationInfo = async () => {
         const q = query(userCollection, where('user', '==', currentUser));
 

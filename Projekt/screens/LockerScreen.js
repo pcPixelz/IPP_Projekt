@@ -19,17 +19,21 @@ class Reservation {
 
 export default function LockerScreen ({ navigation }) {
 
+    // körs när skärmen öppnas
     useEffect(() => {
     FetchReservationInfo();
     }, []);
     
+    //firestore kollektion
     const userCollection = collection(db, 'Reservations');
 
+    //hämtar värde som alla skärmar kan ha tillgång till
     const {currentUser} = useContext(UserContext);
     
     const[list, setList] = useState([]);
     const[activeReservations, setActiveReservations] = useState([]);
     
+    //hämtar reservationer från databasen där nuvarande användare står som den som har bokat
     const FetchReservationInfo = async () => {
         const q = query(userCollection, where('user', '==', currentUser));
     
@@ -49,6 +53,7 @@ export default function LockerScreen ({ navigation }) {
         setActiveReservations(ActiveReservation(newList));
     } 
 
+    //filtrerar bort alla reservationer som inte är aktiva just nu
     const ActiveReservation = (userReservations) => {
 
         const now = new Date();
@@ -68,13 +73,14 @@ export default function LockerScreen ({ navigation }) {
         return newList;
     }
 
+    //ändrar databasens status på låset
     const SendData = async (isLocked) => {
         try {
             const id = activeReservations[0].documentId;
             await setDoc(doc(db, "Reservations", id), {
                 islocked: isLocked
             }, 
-            {merge: true
+            {merge: true //så att dokumentet inte skrivs över.
 
             });
             if(isLocked){
