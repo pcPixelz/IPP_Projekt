@@ -13,7 +13,7 @@
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 unsigned long lastGet = 0;
-const long interval = 7000;
+const long interval = 7000; // 7 sekunder
 
 bool currentLockerStatus = true;
 
@@ -23,6 +23,7 @@ WiFiSSLClient wificlient;
 //http://github.com/amcewen/HttpClient
 HttpClient client = HttpClient(wificlient, serverAddress, port);
 
+// Fysiska ledmatrisen på Arduinon
 ArduinoLEDMatrix matrix;
 
 byte frameOpen[8][12] = {
@@ -81,7 +82,6 @@ byte frameWifiConnected[8][12] = {
 };
 
 void setup() {
-  // put your setup code here, to run once:
 
   Serial.begin(9600);
 
@@ -90,7 +90,7 @@ void setup() {
   SPI.begin();          // Initiate  SPI bus (källa vid include)
   mfrc522.PCD_Init();   // Initiate MFRC522
 
-//Kopplar från föregående wifi och kopplar sedan till det nya. I detta fallet är det samma.
+//Kopplar från föregående wifi och kopplar sedan till det nya.
   WiFi.disconnect();
   Serial.println("Disconnecting from previous Wifi");
   delay(1000);
@@ -112,11 +112,10 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
-  String UID = HandleRFID();
+  String UID = HandleRFID(); // UID är taggens UID som läsaren har läst.
 
-  if(UID != "")
+  if(UID != "")  // tag har lästs
   {
    bool useruid = checkUserUID(UID, "taguid", "Users", "Anton");
    if (useruid) {
@@ -128,7 +127,7 @@ void loop() {
 
   unsigned long now = millis();
 
-if (now - lastGet > interval) {
+if (now - lastGet > interval) { // varje x sekunder körs denna funktion
   lastGet = now;
   HandleFirestore();
 }
@@ -156,7 +155,7 @@ bool checkUserUID(String UID, String field, String firebase_collection, String f
     return -1;
   }
 
-  String field_value = doc["fields"][field]["stringValue"];
+  String field_value = doc["fields"][field]["stringValue"]; // läser fältvärdet från JSON
 
   Serial.println("field_value:" + String(field_value));
 
@@ -176,7 +175,7 @@ bool checkUserUID(String UID, String field, String firebase_collection, String f
 String HandleRFID() {
   if ( ! mfrc522.PICC_IsNewCardPresent())
   {
-    return "";
+    return ""; // modifierat så att den returnerar en string.
   }
   if ( ! mfrc522.PICC_ReadCardSerial())
   {
@@ -208,7 +207,7 @@ void HandleFirestore() {
   if(locked)
   {
       matrix.renderBitmap(frameClose, 8, 12);
-      digitalWrite(7, LOW);
+      digitalWrite(7, LOW); // styrsignalen till låset
   }
   else if (!locked)
   {
